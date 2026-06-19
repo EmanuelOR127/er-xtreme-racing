@@ -1,0 +1,98 @@
+[gd_scene format=3 uid="uid://bl46obljk1wlv"]
+
+[ext_resource type="PackedScene" uid="uid://wyprtw6g1uu0" path="res://main/vehicle/physics/basic_wheel_assembly.tscn" id="1_oso1s"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_5ot3h"]
+size = Vector2(50, 50)
+
+[sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_vv1o5"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_6kucw"]
+size = Vector3(0.74902344, 0.5263672, 2.0498047)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_oso1s"]
+size = Vector3(0.74902344, 0.5263672, 2.0498047)
+
+[node name="StaticBody3D" type="StaticBody3D" unique_id=48421521]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=546975791]
+mesh = SubResource("PlaneMesh_5ot3h")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1234009421]
+shape = SubResource("WorldBoundaryShape3D_vv1o5")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=183554217]
+transform = Transform3D(0.99156356, 0.123731986, -0.0386292, -0.056085907, 0.6782164, 0.7327189, 0.116859704, -0.7243707, 0.67943424, 0, 0, 0)
+shadow_enabled = true
+
+[node name="RigidBody3D" type="RigidBody3D" parent="." unique_id=1439415450]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9981582, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="RigidBody3D" unique_id=2112577975]
+mesh = SubResource("BoxMesh_6kucw")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D" unique_id=1578112681]
+shape = SubResource("BoxShape3D_oso1s")
+
+[node name="BasicWheelAssembly" parent="RigidBody3D" unique_id=768321656 instance=ExtResource("1_oso1s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4387082, -0.1475259, 0.9323317)
+node_a = NodePath("..")
+linear_limit_y/lower_distance = -0.36
+linear_spring_y/equilibrium_point = -0.36
+angular_limit_y/enabled = false
+suspension_length = 0.36
+can_steer = true
+
+[node name="Rotor" parent="RigidBody3D/BasicWheelAssembly" index="0" unique_id=1601771303]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4387082, 0.8506323, 0.9323317)
+
+[node name="Wheel" parent="RigidBody3D/BasicWheelAssembly" index="1" unique_id=818217160]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5037082, 0.8506323, 0.9323317)
+
+[node name="BasicWheelAssembly2" parent="RigidBody3D" unique_id=1480471688 instance=ExtResource("1_oso1s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.439, -0.148, 0.932)
+node_a = NodePath("..")
+linear_limit_y/lower_distance = -0.36
+linear_spring_y/equilibrium_point = -0.36
+angular_limit_y/enabled = false
+flip = true
+suspension_length = 0.36
+can_steer = true
+
+[node name="Rotor" parent="RigidBody3D/BasicWheelAssembly2" index="0" unique_id=1601771303]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.439, 0.8501582, 0.932)
+
+[node name="Wheel" parent="RigidBody3D/BasicWheelAssembly2" index="1" unique_id=818217160]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.504, 0.8501582, 0.932)
+
+[node name="BasicWheelAssembly3" parent="RigidBody3D" unique_id=604925991 instance=ExtResource("1_oso1s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4387082, -0.1475259, -0.81094253)
+node_a = NodePath("..")
+linear_limit_y/lower_distance = -0.36
+linear_spring_y/equilibrium_point = -0.36
+suspension_length = 0.36
+
+[node name="Rotor" parent="RigidBody3D/BasicWheelAssembly3" index="0" unique_id=1601771303]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4387082, 0.8506323, -0.81094253)
+
+[node name="Wheel" parent="RigidBody3D/BasicWheelAssembly3" index="1" unique_id=818217160]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5037082, 0.8506323, -0.81094253)
+
+[node name="BasicWheelAssembly4" parent="RigidBody3D" unique_id=659928450 instance=ExtResource("1_oso1s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.439, -0.148, -0.81127423)
+node_a = NodePath("..")
+linear_limit_y/lower_distance = -0.36
+linear_spring_y/equilibrium_point = -0.36
+flip = true
+suspension_length = 0.36
+
+[node name="Rotor" parent="RigidBody3D/BasicWheelAssembly4" index="0" unique_id=1601771303]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.439, 0.8501582, -0.81127423)
+
+[node name="Wheel" parent="RigidBody3D/BasicWheelAssembly4" index="1" unique_id=818217160]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.504, 0.8501582, -0.81127423)
+
+[editable path="RigidBody3D/BasicWheelAssembly"]
+[editable path="RigidBody3D/BasicWheelAssembly2"]
+[editable path="RigidBody3D/BasicWheelAssembly3"]
+[editable path="RigidBody3D/BasicWheelAssembly4"]
