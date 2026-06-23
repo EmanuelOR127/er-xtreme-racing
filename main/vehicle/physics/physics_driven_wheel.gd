@@ -57,6 +57,7 @@ var side_grip_multiplier: float = 1
 @export_range(0.01, 0.2, 0.001, "suffix:m") var rim_thickness: float = 0.005 ##The rim's virtual thickness in meters, used to calculate the wheel's mass.
 @export_range(0, 22590, 1,"suffix:Kg/m^3") var rim_material_density: float = 7810 ##The rim's material density in Kilograms per meter cubed, used to calculate the wheel's mass.
 @export_range(0, 4, 0.001) var bearing_damp: float = 0.1 ##How much does the wheel slow over time while freely spinning.
+@export var max_surface_speed: float = 100
 
 @export_group("Suspension")
 ##From the origin point of this node, how far down does the suspension expand.
@@ -175,6 +176,9 @@ func _physics_process(delta: float) -> void:
 		else: rotation.y = 0
 		if use_as_traction: throttle_force = body.engine_force
 		if use_as_brake: braking_force = body.brake
+	if super_body and super_body is VehicleBody3D:
+		if use_as_traction: throttle_force = super_body.engine_force
+		if use_as_brake: braking_force = super_body.brake
 	assert(is_instance_valid(_shapecast), "Wheel simulation cannot be performed without _shapecast.")
 	if _shapecast.is_colliding():
 		var collision_count: int = 0
@@ -210,8 +214,8 @@ func _physics_process(delta: float) -> void:
 			point_dir /= collision_count
 			#1 PSI = 6894.75729 Pascal
 			var along_axis_movement: float = surface_velocity.dot(point_dir)
-			apply_force(point_dir * distance_to_edge * (tire_pressure * 6894.75729))
-			apply_force(-point_dir * along_axis_movement * pressure_damping * 6894.75729)
+			apply_central_force(point_dir * distance_to_edge * (tire_pressure * 6894.75729))
+			apply_central_force(-point_dir * along_axis_movement * pressure_damping * 6894.75729)
 			
 			#Friction
 			var mass: float = body.mass
@@ -229,8 +233,8 @@ func _physics_process(delta: float) -> void:
 			forward_friction *= forward_grip_multiplier
 			sideways_friction /= collision_count
 			forward_friction /= collision_count
-			apply_force(-global_basis.x * sideways_friction * mass)
-			apply_force(-global_basis.z * forward_friction * mass)
+			apply_force(-global_basis.x * sideways_friction * mass, local_point)
+			apply_force(-global_basis.z * forward_friction * mass, local_point)
 			apply_torque(forward_friction * mass, point_radius)
 	if losing_grip or not _shapecast.is_colliding():
 		side_grip_multiplier = move_toward(side_grip_multiplier, side_grip * dry_grip * side_grip_loss_multiplier, delta * grip_change_rate)
@@ -290,6 +294,7 @@ func apply_torque(force: float, distance: float) -> void:
 	var torque: float = force * distance
 	var acceleration: float = torque/wheel_mass * get_physics_process_delta_time()
 	surface_speed += acceleration
+	surface_speed = clampf(surface_speed, -max_surface_speed, max_surface_speed)
 
 func calculate_torque(force: float, distance: float) -> float:
 	var torque: float = force * distance
@@ -299,7 +304,7 @@ func calculate_torque(force: float, distance: float) -> float:
 
 ##Applies a force on the wheel in newtons to act against the suspension.
 ##The force is always centered on the wheel's pivot.
-func apply_force(force: Vector3) -> void:
+func apply_central_force(force: Vector3) -> void:
 	var delta: float = get_physics_process_delta_time()
 	if suspension_travel > 0:
 		var suspension_dot: float = global_basis.y.dot(force)
@@ -321,6 +326,16 @@ func apply_force(force: Vector3) -> void:
 		else:
 			body.apply_force(force * delta, global_position - body.global_position)
 
+func apply_force(force: Vector3, offset: Vector3) -> void:
+	var delta: float = get_physics_process_delta_time()
+	if super_body:
+		var parallel_force:= global_basis.y * global_basis.y.dot(force)
+		var perpendicular_force:= force-parallel_force
+		body.apply_force(parallel_force * delta, (global_position + offset) - body.global_position)
+		super_body.apply_force(perpendicular_force * delta, (global_position + offset) - super_body.global_position)
+	else:
+		body.apply_force(force * delta, (global_position + offset) - body.global_position)
+
 func suspension_physics(delta: float) -> void:
 	var suspension_push: float = (suspension_travel-suspension_position) * (spring_stiffness*1000)
 	var suspension_pushback: Vector3 = global_basis.y * clampf(suspension_push, 0, suspension_max_load)
@@ -331,8 +346,8 @@ func suspension_physics(delta: float) -> void:
 	position = origin + Vector3.DOWN * suspension_position
 	_raycast.position.y = suspension_position
 	
-	apply_force(body.get_gravity())
-	apply_force(-global_basis.y * suspension_push)
+	apply_central_force(body.get_gravity())
+	apply_central_force(-global_basis.y * suspension_push)
 	
 	if suspension_velocity > 0: suspension_velocity -= clampf(suspension_velocity * spring_damping * delta, 0, suspension_velocity)
 	else: suspension_velocity -= clampf(suspension_velocity * spring_damping * delta, suspension_velocity, 0)
@@ -362,7 +377,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 func _validate_property(property: Dictionary) -> void:
 	if property.name == "wheel_mass": property.usage = PROPERTY_USAGE_EDITOR
-	if get_parent() is VehicleBody3D:
+	if get_parent() is VehicleBody3D or super_body and super_body is VehicleBody3D:
 		if property.name == "use_as_steering": property.usage = PROPERTY_USAGE_DEFAULT
 		if property.name == "use_as_traction": property.usage = PROPERTY_USAGE_DEFAULT
 		if property.name == "use_as_brake": property.usage = PROPERTY_USAGE_DEFAULT

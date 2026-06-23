@@ -40,6 +40,5 @@ func _physics_process(delta: float) -> void:
 	var parent:= get_parent()
 	if parent is VehicleBody3D:
 		target_steer = parent.steering
-		$Rotor/PhysicsDrivenWheel.apply_torque(parent.engine_force, $Rotor/PhysicsDrivenWheel.tire_radius)
 	if not can_steer: target_steer = 0
 	$Rotor/PhysicsDrivenWheel.rotation.y = move_toward($Rotor/PhysicsDrivenWheel.rotation.y, -target_steer, delta * 4)

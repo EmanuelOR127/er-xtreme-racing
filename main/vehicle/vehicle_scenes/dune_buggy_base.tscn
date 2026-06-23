@@ -3,22 +3,32 @@
 [ext_resource type="PackedScene" uid="uid://wyprtw6g1uu0" path="res://main/vehicle/physics/basic_wheel_assembly.tscn" id="1_p4v0s"]
 [ext_resource type="PackedScene" uid="uid://cdqao4sh1p8f5" path="res://assets/models/vehicle/dune_buggy_base.blend" id="2_15t0r"]
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_p4v0s"]
+cull_mode = 2
+
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_p4v0s"]
 points = PackedVector3Array(0.26786184, 0.105694234, 0.9608079, -0.24917635, -0.40326148, -0.80916995, -0.25031027, -0.37528515, -0.8716831, -0.26620793, 0.105694234, 0.9608079, 0.26786184, 0.35708886, 0.36368492, 0.24722035, -0.3688689, 0.59290636, 0.26786184, -0.17683643, -1.0498079, -0.26620793, 0.35708886, 0.36368492, -0.24941845, -0.34461233, 0.720726, -0.20331776, -0.051216, -0.98682857, 0.24964957, -0.4015252, -0.8055587, -0.26620793, -0.17683643, -1.0498079, 0.20502396, -0.051216, -0.98682857, 0.25049433, -0.28524533, 0.7778418, -0.24351569, -0.39493698, -0.044499993, -0.25040993, -0.28681463, 0.7830114, 0.24488944, -0.394525, -0.044499993, -0.245818, -0.36920914, 0.5935571, 0.24999174, -0.343278, 0.71742165, 0.25045538, -0.3732444, -0.86671346, -0.2504906, -0.25723013, -0.9906368, -0.25049567, -0.16852668, 0.8423822, 0.2364429, -0.08258267, -0.98682857, -0.23473671, -0.08258267, -0.98682857, 0.2504379, -0.25572515, -0.9842118, 0.25039425, -0.16759834, 0.8361879, -0.26620793, 0.07432756, -0.38990238, 0.26786184, 0.07432756, -0.38990238)
 
 [node name="DuneBuggy" type="VehicleBody3D" unique_id=1103396355]
+center_of_mass_mode = 1
+center_of_mass = Vector3(0, -0.14, 0)
 
 [node name="dune_buggy_base" parent="." unique_id=1433333572 instance=ExtResource("2_15t0r")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.24482068, 0)
+
+[node name="Cube" parent="dune_buggy_base" index="0" unique_id=566959438]
+surface_material_override/0 = SubResource("StandardMaterial3D_p4v0s")
 
 [node name="BasicWheelAssembly" parent="." unique_id=1787130294 node_paths=PackedStringArray("wheel") instance=ExtResource("1_p4v0s")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4597432, 0.023263037, 0.7963058)
 node_a = NodePath("..")
 linear_limit_y/lower_distance = -0.16
-linear_spring_y/stiffness = 20000.0
+linear_spring_y/stiffness = 1000.0
+linear_spring_y/damping = 800.0
 linear_spring_y/equilibrium_point = -0.16
 suspension_length = 0.16
-suspension_stiffness = 20000.0
+suspension_stiffness = 1000.0
+suspension_damping = 800.0
 can_steer = true
 wheel = NodePath("../dune_buggy_base/RightFrontWheel")
 
@@ -27,15 +37,18 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4597432, 0.023263037, 0.79
 
 [node name="PhysicsDrivenWheel" parent="BasicWheelAssembly/Rotor" index="1" unique_id=925013828 node_paths=PackedStringArray("super_body")]
 super_body = NodePath("../../..")
+use_as_traction = false
 
 [node name="BasicWheelAssembly2" parent="." unique_id=1304903015 node_paths=PackedStringArray("wheel") instance=ExtResource("1_p4v0s")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.46, 0.023647308, 0.79643697)
 node_a = NodePath("..")
 linear_limit_y/lower_distance = -0.16
-linear_spring_y/stiffness = 20000.0
+linear_spring_y/stiffness = 1000.0
+linear_spring_y/damping = 800.0
 linear_spring_y/equilibrium_point = -0.16
 suspension_length = 0.16
-suspension_stiffness = 20000.0
+suspension_stiffness = 1000.0
+suspension_damping = 800.0
 can_steer = true
 wheel = NodePath("../dune_buggy_base/LeftFrontWheel")
 
@@ -44,14 +57,15 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.46, 0.023647308, 0.79643697
 
 [node name="PhysicsDrivenWheel" parent="BasicWheelAssembly2/Rotor" index="1" unique_id=925013828 node_paths=PackedStringArray("super_body")]
 super_body = NodePath("../../..")
+use_as_traction = false
 
 [node name="BasicWheelAssembly3" parent="." unique_id=222497884 node_paths=PackedStringArray("wheel") instance=ExtResource("1_p4v0s")]
 transform = Transform3D(1, 0, 0, 0, 0.70710677, -0.70710677, 0, 0.70710677, 0.70710677, -0.462, 0.085696876, -0.56875545)
 node_a = NodePath("..")
-linear_spring_y/stiffness = 20000.0
-linear_spring_y/damping = 2.0
-suspension_stiffness = 20000.0
-suspension_damping = 2.0
+linear_spring_y/stiffness = 2000.0
+linear_spring_y/damping = 1000.0
+suspension_stiffness = 2000.0
+suspension_damping = 1000.0
 wheel = NodePath("../dune_buggy_base/RightBackWheel")
 
 [node name="Rotor" parent="BasicWheelAssembly3" index="0" unique_id=1601771303]
@@ -60,15 +74,17 @@ transform = Transform3D(1, 0, 0, 0, 0.70710677, -0.70710677, 0, 0.70710677, 0.70
 [node name="PhysicsDrivenWheel" parent="BasicWheelAssembly3/Rotor" index="1" unique_id=925013828 node_paths=PackedStringArray("super_body")]
 super_body = NodePath("../../..")
 tire_radius = 0.34199999999999997
+grip_loss_friction = 10.0
+grip_recovery_friction = 8.0
 rim_width = 0.241
 
 [node name="BasicWheelAssembly4" parent="." unique_id=73647886 node_paths=PackedStringArray("wheel") instance=ExtResource("1_p4v0s")]
 transform = Transform3D(1, 0, 0, 0, 0.7071067, -0.7071067, 0, 0.7071067, 0.7071067, 0.46169806, 0.08601037, -0.5684921)
 node_a = NodePath("..")
-linear_spring_y/stiffness = 20000.0
-linear_spring_y/damping = 2.0
-suspension_stiffness = 20000.0
-suspension_damping = 2.0
+linear_spring_y/stiffness = 2000.0
+linear_spring_y/damping = 1000.0
+suspension_stiffness = 2000.0
+suspension_damping = 1000.0
 wheel = NodePath("../dune_buggy_base/LeftBackWheel")
 
 [node name="Rotor" parent="BasicWheelAssembly4" index="0" unique_id=1601771303]
@@ -77,11 +93,16 @@ transform = Transform3D(1, 0, 0, 0, 0.7071067, -0.7071067, 0, 0.7071067, 0.70710
 [node name="PhysicsDrivenWheel" parent="BasicWheelAssembly4/Rotor" index="1" unique_id=925013828 node_paths=PackedStringArray("super_body")]
 super_body = NodePath("../../..")
 tire_radius = 0.34199999999999997
+grip_loss_friction = 10.0
+grip_recovery_friction = 8.0
 rim_width = 0.241
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=201283327]
 transform = Transform3D(-0.99999976, 0, -0.00068584277, 0, 1, 0, 0.00068584277, 0, -0.99999976, 0, 0.24482068, 0)
 shape = SubResource("ConvexPolygonShape3D_p4v0s")
+
+[node name="Marker3D" type="Marker3D" parent="." unique_id=436650580]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.14, 0)
 
 [editable path="dune_buggy_base"]
 [editable path="BasicWheelAssembly"]
